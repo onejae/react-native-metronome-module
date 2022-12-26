@@ -35,6 +35,9 @@ public class MetronomeModule extends ReactContextBaseJavaModule implements Lifec
   private final ScheduledThreadPoolExecutor scheduledExecutor = new ScheduledThreadPoolExecutor(1);
   private ScheduledFuture scheduledFuture;
 
+  private int soundId1;
+  private int soundId2;
+
   private final Runnable tok = new Runnable() {
     @Override
     public void run() {
@@ -65,8 +68,10 @@ public class MetronomeModule extends ReactContextBaseJavaModule implements Lifec
           .build())
         .build();
 
-    int soundResourceId = this.reactContext.getResources().getIdentifier("metronome", "raw", this.reactContext.getPackageName());
-    this.soundPool.load(this.reactContext, soundResourceId, 1);
+    int resId1 = this.reactContext.getResources().getIdentifier("firstbeat", "raw", this.reactContext.getPackageName());
+    int resId2 = this.reactContext.getResources().getIdentifier("secondbeat", "raw", this.reactContext.getPackageName());
+    soundId1 = this.soundPool.load(this.reactContext, resId1, 1);
+    soundId2 = this.soundPool.load(this.reactContext, resId2, 2);
   }
 
   /** === Host lifecycle hooks ============================================= */
@@ -143,6 +148,16 @@ public class MetronomeModule extends ReactContextBaseJavaModule implements Lifec
   @ReactMethod
   public void isPaused(Promise promise) {
     promise.resolve(this.currentState == metronomeState.PAUSED);
+  }
+
+
+  @ReactMethod
+  public void playSound(int idx) {
+    if (idx == 0) {
+      soundPool.play(soundId1, 1, 1, 1, 0, 1.0f);
+    } else {
+      soundPool.play(soundId2, 1, 1, 1, 0, 1.0f);
+    }
   }
 
   /** === Public methods =================================================== */

@@ -4,6 +4,8 @@ type MetronomeModuleType = {
   start: () => void;
   stop: () => void;
 
+  playSound: (idx: number) => void;
+
   setBPM: (newBPM: number) => void;
   getBPM: () => Promise<number>;
 
