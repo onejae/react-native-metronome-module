@@ -18,6 +18,8 @@ class MetronomeModule: NSObject, RCTInvalidating {
   var timer: Timer?;
   var player: AVAudioPlayer?;
 
+  var players: [AVAudioPlayer] = [];
+    
   enum metronomeState {
     case PLAYING
     case PAUSED
@@ -26,11 +28,11 @@ class MetronomeModule: NSObject, RCTInvalidating {
   var currentState: metronomeState = metronomeState.STOPPED;
 
   /** === Public constructor =============================================== */
-/*  override init() {
+  override init() {
     super.init();
 
     self.initializeSoundPlayer();
-  }*/
+  }
 
   /** === Private methods ================================================== */
   private func getIntervalMS() -> Double {
@@ -38,13 +40,18 @@ class MetronomeModule: NSObject, RCTInvalidating {
   }
 
   private func initializeSoundPlayer() -> Void {
-    guard let url = Bundle.main.url(forResource: "metronome", withExtension: "wav") else { print("metronome.wav file not found"); return; };
+    guard let firstbeatUrl = Bundle.main.url(forResource: "firstbeat", withExtension: "mp3") else { print("firstbeat.mp3 file not found"); return; };
+    guard let secondbeatUrl = Bundle.main.url(forResource: "secondbeat", withExtension: "mp3") else { print("secondbeat.mp3 file not found"); return; };
 
     do {
-      try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, mode: AVAudioSessionModeDefault);
+      try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.default);
       try AVAudioSession.sharedInstance().setActive(true);
-
-      self.player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.wav.rawValue);
+        let audioPlayer1 = try AVAudioPlayer(contentsOf: firstbeatUrl, fileTypeHint: AVFileType.mp3.rawValue);
+        
+      let audioPlayer2 = try AVAudioPlayer(contentsOf: secondbeatUrl, fileTypeHint: AVFileType.mp3.rawValue);
+        
+        self.players.append(audioPlayer1);
+        self.players.append(audioPlayer2);
     } catch let error {
       print(error.localizedDescription)
     }
@@ -52,7 +59,7 @@ class MetronomeModule: NSObject, RCTInvalidating {
 
   @objc private func tok()
   {
-    self.player?.play();
+    
   }
 
   /** === React Methods ==================================================== */
@@ -94,6 +101,13 @@ class MetronomeModule: NSObject, RCTInvalidating {
       self.start();
     }
   }
+    
+  @objc(playSound:)
+  func playSound(_ idx: Int) -> Void {
+     self.players[idx].play();
+  }
+      
+      
 
   @objc(getBPM:rejecter:)
   func getBPM(_ resolve: RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) -> Void {
