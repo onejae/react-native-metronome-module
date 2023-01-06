@@ -6,6 +6,8 @@
 RCT_EXTERN_METHOD(start)
 RCT_EXTERN_METHOD(stop)
 
+RCT_EXTERN_METHOD(playSound:(int)idx)
+
 RCT_EXTERN_METHOD(setBPM:(int)newBPM)
 RCT_EXTERN_METHOD(getBPM:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
