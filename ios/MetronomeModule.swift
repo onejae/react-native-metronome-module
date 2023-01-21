@@ -19,7 +19,7 @@ class MetronomeModule: NSObject, RCTInvalidating {
   var player: AVAudioPlayer?;
 
   var players: [AVAudioPlayer] = [];
-    
+
   enum metronomeState {
     case PLAYING
     case PAUSED
@@ -40,21 +40,21 @@ class MetronomeModule: NSObject, RCTInvalidating {
   }
 
   private func initializeSoundPlayer() -> Void {
-    guard let firstbeatUrl = Bundle.main.url(forResource: "firstbeat", withExtension: "mp3") else { print("firstbeat.mp3 file not found"); return; };
-    guard let secondbeatUrl = Bundle.main.url(forResource: "secondbeat", withExtension: "mp3") else { print("secondbeat.mp3 file not found"); return; };
+    //  guard let firstbeatUrl = Bundle.main.url(forResource: "firstbeat", withExtension: "mp3") else { print("firstbeat.mp3 file not found"); return; };
+    //  guard let secondbeatUrl = Bundle.main.url(forResource: "secondbeat", withExtension: "mp3") else { print("secondbeat.mp3 file not found"); return; };
 
-    do {
-      try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.default);
-      try AVAudioSession.sharedInstance().setActive(true);
-        let audioPlayer1 = try AVAudioPlayer(contentsOf: firstbeatUrl, fileTypeHint: AVFileType.mp3.rawValue);
+    //  do {
+    //    try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.default);
+    //    try AVAudioSession.sharedInstance().setActive(true);
+    //      let audioPlayer1 = try AVAudioPlayer(contentsOf: firstbeatUrl, fileTypeHint: AVFileType.mp3.rawValue);
         
-      let audioPlayer2 = try AVAudioPlayer(contentsOf: secondbeatUrl, fileTypeHint: AVFileType.mp3.rawValue);
+    //    let audioPlayer2 = try AVAudioPlayer(contentsOf: secondbeatUrl, fileTypeHint: AVFileType.mp3.rawValue);
         
-        self.players.append(audioPlayer1);
-        self.players.append(audioPlayer2);
-    } catch let error {
-      print(error.localizedDescription)
-    }
+    //      self.players.append(audioPlayer1);
+    //      self.players.append(audioPlayer2);
+    //  } catch let error {
+    //    print(error.localizedDescription)
+    //  }
   }
 
   @objc private func tok()
@@ -106,8 +106,25 @@ class MetronomeModule: NSObject, RCTInvalidating {
   func playSound(_ idx: Int) -> Void {
      self.players[idx].play();
   }
-      
-      
+
+  @objc(loadSound:resourcePath:)
+  func loadSound(_ idx: Int, resourcePath: String) -> Void {
+
+  do {
+
+    guard let soundUrl = Bundle.main.url(forResource: resourcePath, withExtension: "mp3") else { print("firstbeat.mp3 file not found"); return; };
+      try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.default);
+      try AVAudioSession.sharedInstance().setActive(true);
+        let audioPlayer = try AVAudioPlayer(contentsOf: soundUrl, fileTypeHint: AVFileType.mp3.rawValue);
+        
+        
+        self.players.append(audioPlayer);
+    } catch let error {
+      print(error.localizedDescription)
+    }
+
+  
+  }
 
   @objc(getBPM:rejecter:)
   func getBPM(_ resolve: RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) -> Void {
