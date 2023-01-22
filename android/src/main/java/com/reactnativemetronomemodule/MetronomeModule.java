@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -40,7 +41,7 @@ public class MetronomeModule extends ReactContextBaseJavaModule implements Lifec
 
   private int soundId1;
   private int soundId2;
-  private List<Integer> soundIds;
+  private HashMap<Integer, Integer> soundIdMap;
 
 
   private final Runnable tok = new Runnable() {
@@ -66,7 +67,7 @@ public class MetronomeModule extends ReactContextBaseJavaModule implements Lifec
 
   private void initializeSoundPool() {
     // Use the new SoundPool builder on newer version of android
-    soundIds = new ArrayList<>();
+    soundIdMap = new HashMap<>();
 
     this.soundPool = new SoundPool.Builder()
         .setMaxStreams(4)
@@ -167,10 +168,10 @@ public class MetronomeModule extends ReactContextBaseJavaModule implements Lifec
 
   @ReactMethod
   public void playSound(int idx) {
-    if (idx >= 0 && idx < soundIds.size()) {
-      int soundId = soundIds.get(idx);
+    /* if (idx >= 0 && idx < soundIds.size()) { */
+      int soundId = soundIdMap.get(idx);
       soundPool.play(soundId, 1, 1, 1, 0, 1);
-    }
+    /* } */
   }
 
   @ReactMethod
@@ -178,7 +179,8 @@ public class MetronomeModule extends ReactContextBaseJavaModule implements Lifec
     int resId = this.reactContext.getResources().getIdentifier(resource,
             "raw", this.reactContext.getPackageName());
     int soundId = this.soundPool.load(this.reactContext, resId, 1);
-    soundIds.add(soundId);
+    /* soundIds.add(soundId); */
+    soundIdMap.put(idx, soundId);
   }
 
   /** === Public methods =================================================== */

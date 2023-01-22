@@ -18,7 +18,8 @@ class MetronomeModule: NSObject, RCTInvalidating {
   var timer: Timer?;
   var player: AVAudioPlayer?;
 
-  var players: [AVAudioPlayer] = [];
+  /* var players: [AVAudioPlayer] = []; */
+  var players = [Int: AVAudioPlayer]()
 
   enum metronomeState {
     case PLAYING
@@ -104,7 +105,9 @@ class MetronomeModule: NSObject, RCTInvalidating {
     
   @objc(playSound:)
   func playSound(_ idx: Int) -> Void {
-     self.players[idx].play();
+    if let audioPlayer = self.players[idx] {
+        audioPlayer.play()
+    }
   }
 
   @objc(loadSound:resourcePath:)
@@ -117,8 +120,8 @@ class MetronomeModule: NSObject, RCTInvalidating {
       try AVAudioSession.sharedInstance().setActive(true);
         let audioPlayer = try AVAudioPlayer(contentsOf: soundUrl, fileTypeHint: AVFileType.mp3.rawValue);
         
-        
-        self.players.append(audioPlayer);
+        /* self.players.append(audioPlayer); */
+        self.players[idx] = audioPlayer;
     } catch let error {
       print(error.localizedDescription)
     }
