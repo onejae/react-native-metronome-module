@@ -9,6 +9,7 @@ import Foundation
 import AVFoundation
 import React
 
+
 @objc(MetronomeModule)
 class MetronomeModule: NSObject, RCTInvalidating {
 
@@ -18,8 +19,7 @@ class MetronomeModule: NSObject, RCTInvalidating {
   var timer: Timer?;
   var player: AVAudioPlayer?;
 
-  /* var players: [AVAudioPlayer] = []; */
-  var players = [Int: AVAudioPlayer]()
+    var players = [Int: [AVAudioPlayer]]();
 
   enum metronomeState {
     case PLAYING
@@ -105,8 +105,13 @@ class MetronomeModule: NSObject, RCTInvalidating {
     
   @objc(playSound:)
   func playSound(_ idx: Int) -> Void {
-    if let audioPlayer = self.players[idx] {
-        audioPlayer.play()
+    if let audioPlayers = self.players[idx] {
+        for player in audioPlayers {
+            if player.isPlaying != true {
+                player.play();
+                break;
+            }
+        }
     }
   }
 
@@ -114,14 +119,22 @@ class MetronomeModule: NSObject, RCTInvalidating {
   func loadSound(_ idx: Int, resourcePath: String) -> Void {
 
   do {
-
     guard let soundUrl = Bundle.main.url(forResource: resourcePath, withExtension: "mp3") else { print("firstbeat.mp3 file not found"); return; };
       try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.default);
       try AVAudioSession.sharedInstance().setActive(true);
-        let audioPlayer = try AVAudioPlayer(contentsOf: soundUrl, fileTypeHint: AVFileType.mp3.rawValue);
-        
+      
+      var players = [AVAudioPlayer]()
+
+      for i in 0..<20 {
+          let audioPlayer = try AVAudioPlayer(contentsOf: soundUrl, fileTypeHint: AVFileType.mp3.rawValue);
+          audioPlayer.prepareToPlay();
+          
+          players.append(audioPlayer)
+      }
+
+    
         /* self.players.append(audioPlayer); */
-        self.players[idx] = audioPlayer;
+        self.players[idx] = players;
     } catch let error {
       print(error.localizedDescription)
     }
